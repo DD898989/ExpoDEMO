@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Run next",
+            "runtimeExecutable": "next",
+            "cwd": "${workspaceFolder}",
+            "args": []
+        },
+        {
+            "name": "build and start",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm run build:start"
+        }
+    ]
+}

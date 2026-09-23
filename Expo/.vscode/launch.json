@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Expo Web(press j for GO APP)",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://localhost:8081",
+      "preLaunchTask": "expo-web"
+    }
+  ]
+}

@@ -55,23 +55,6 @@ ExpoDEMO/
 ### 2.1. Expo VSCode 偵錯設定
 
 位於 `Expo/.vscode/launch.json`：
-
-```json
-// Expo/.vscode/launch.json
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Expo Web(press j for GO APP)",
-      "type": "msedge",
-      "request": "launch",
-      "url": "http://localhost:8081",
-      "preLaunchTask": "expo-web"
-    }
-  ]
-}
-```
-
 在終端機執行 Expo 時，按下 `j` 鍵可直接呼叫 React Native 原生端偵錯工具，方便在網頁偵錯與 Expo Go 原生端偵錯之間切換。
 
 ---
@@ -79,60 +62,17 @@ ExpoDEMO/
 ### 2.2. NestJS VSCode 偵錯設定
 
 位於 `NestJS/.vscode/launch.json`：
-
-```json
-// NestJS/.vscode/launch.json
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "command": "npm start",
-      "name": "Run npm start",
-      "request": "launch",
-      "type": "node-terminal"
-    }
-  ]
-}
-```
-
-標準的 `node-terminal` 模式，執行 `npm start` 即自動附加 Node.js 偵錯器。
+採用標準的 `node-terminal` 模式，執行 `npm start` 即自動附加 Node.js 偵錯器。
 
 ---
 
 ### 2.3. Next.js VSCode 偵錯設定
 
-位於 `Next.js/.vscode/launch.json`：
-
-```json
-// Next.js/.vscode/launch.json
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Run next",
-      "runtimeExecutable": "next",
-      "cwd": "${workspaceFolder}",
-      "args": []
-    },
-    {
-      "name": "Build and Start",
-      "type": "node-terminal",
-      "request": "launch",
-      "command": "npm run build:start"
-    }
-  ]
-}
-```
-
-機制解析：
+位於 `Next.js/.vscode/launch.json`，提供雙重偵錯模式：
 1. **模式一：`Run next`（開發除錯）**：
-   - 以 `type: "node"` 啟動 Next.js CLI。
-   - 適用於一般開發階段，針對 React Server Components (RSC)、SSR 渲染流程與伺服端 `fetch` 進行原始碼中斷點除錯。
+   以 `type: "node"` 啟動 Next.js CLI，適用於一般開發階段，針對 React Server Components (RSC)、SSR 渲染流程與伺服端 `fetch` 進行原始碼中斷點除錯。
 2. **模式二：`Build and Start`（生產建置除錯）**：
-   - 執行 `npm run build:start`（即 `next build && next start`）。
-   - 適用於驗證 SSG (靜態生成) 在 build 階段的行為，以及 ISR (增量靜態再生產) 在正式生產模式下的快取與背景再生機制。
+   執行 `npm run build:start`（即 `next build && next start`），適用於驗證 SSG (靜態生成) 在 build 階段的行為，以及 ISR (增量靜態再生產) 在正式生產模式下的快取與背景再生機制。
 
 ---
 

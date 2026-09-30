@@ -1,6 +1,6 @@
 # ExpoDEMO 全端跨平台整合專案 (Expo + Next.js + NestJS)
 
-本專案整合了行動端/跨平台應用 (Expo React Native)、Web 應用 (Next.js 16) 以及後端微服務 (NestJS 10)。透過根目錄共享的 `COMMON.ts`，實現全端型別共用與一致的開發流程。
+本專案整合了行動端/跨平台應用 (Expo React Native)、Web 應用 (Next.js) 以及後端微服務 (NestJS)。透過根目錄共享的 `COMMON.ts`，實現全端型別共用與一致的開發流程。
 
 ---
 
@@ -13,8 +13,6 @@
    - [2.3 Next.js (開發模式與生產建置雙偵錯)](#23-nextjs-vscode-偵錯設定)
 3. [COMMON.ts 跨端共享型別與設定的核心機制](#3-commonts-跨端共享型別與設定的核心機制)
 4. [Expo 快速測試機制：__DEV__ 與手機端自動化模擬測試](#4-expo-快速測試機制__dev__-與手機端自動化模擬測試)
-   - [4.1 實作機制與設計思維](#41-實作機制與設計思維)
-   - [4.2 「雖然污染原始碼，但極速驗證」的權衡與優勢](#42-雖然污染原始碼但極速驗證的權衡與優勢)
 5. [建議啟動順序](#5-建議啟動順序)
 
 ---
@@ -39,7 +37,7 @@ ExpoDEMO/
 │   │   ├── main.ts           # 監聽 0.0.0.0 與 API_PORT，開放 CORS
 │   │   └── app.controller.ts # 實作 CommonApi 介面定義的 Router 端點
 │   └── tsconfig.json         # 設定 @common 路徑映射
-└── Next.js/                  # Next.js 16 Web 前端應用
+└── Next.js/                  # Next.js Web 前端應用
     ├── .vscode/
     │   └── launch.json       # Run next (開發) 與 Build and Start (生產) 雙重偵錯
     ├── src/app/
@@ -56,7 +54,7 @@ ExpoDEMO/
 
 ### 2.1. Expo VSCode 偵錯設定
 
-位於 `Expo/.vscode/launch.json` 與 `Expo/.vscode/tasks.json`：
+位於 `Expo/.vscode/launch.json`：
 
 ```json
 // Expo/.vscode/launch.json
@@ -74,14 +72,7 @@ ExpoDEMO/
 }
 ```
 
-機制解析：
-1. **`preLaunchTask: "expo-web"`**：
-   - 啟動偵錯前，VS Code 會在背景執行 `Expo/.vscode/tasks.json` 定義的 `npx expo start --web`。
-   - 任務利用 `problemMatcher` 監聽輸出中的 `Waiting on|Logs for`，確認 Metro Bundler 已就緒後才喚起瀏覽器。
-2. **`type: "msedge"`**：
-   - 開啟 Microsoft Edge 並附加 Chrome DevTools Protocol，可直接在 VS Code 原始碼檔案（如 `App.tsx`）設置中斷點進行行級偵錯。
-3. **名稱標註 `(press j for GO APP)` 的意義**：
-   - 在終端機執行 Expo 時，按下 `j` 鍵可直接呼叫 React Native 原生端偵錯工具，方便在網頁偵錯與 Expo Go 原生端偵錯之間切換。
+在終端機執行 Expo 時，按下 `j` 鍵可直接呼叫 React Native 原生端偵錯工具，方便在網頁偵錯與 Expo Go 原生端偵錯之間切換。
 
 ---
 
@@ -104,9 +95,7 @@ ExpoDEMO/
 }
 ```
 
-機制解析：
-- 標準的 `node-terminal` 模式，直接執行 `npm start`（呼叫 `nest start`）。
-- VS Code 會自動附加 Node.js 偵錯器，可直接在 Controller、Service 下中斷點除錯，無需額外配置 port 或 attach 參數。
+標準的 `node-terminal` 模式，執行 `npm start` 即自動附加 Node.js 偵錯器。
 
 ---
 
@@ -221,20 +210,9 @@ export default function RPSGame() {
 }
 ```
 
-### 4.1. 實作機制與設計思維
+### 「雖然污染原始碼，但極速驗證」的權衡與優勢
 
-`RPSSimulatorTest` 提供「連續猜 100 次」的高頻模擬功能：
-- **高頻連鎖更新**：以迴圈搭配每 10ms 間隔快速觸發 100 次遊戲邏輯與計分更新。
-- **可隨時中斷**：透過 `useRef(false)` 作為停止旗標，可隨時手動中斷。
-- **驗證核心**：在不依賴外部測試腳本的情況下，即時驗證 React Native 在手機上的頻繁狀態渲染、判定邊界與記憶體穩定度。
-
----
-
-### 4.2. 「雖然污染原始碼，但極速驗證」的權衡與優勢
-
-在元件內直接寫入 `{__DEV__ && <RPSSimulatorTest />}` 確實打破了測試與業務邏輯嚴格分離的架構原則，但具備顯著的實務價值：
-
-#### 效益與代價比較
+在元件內直接寫入 `{__DEV__ && <RPSSimulatorTest />}` 雖然打破了測試與業務邏輯嚴格分離的架構原則，但具備顯著的實務價值：
 
 | 評估面向 | 傳統端對端測試 (如 Detox / Appium) | `__DEV__` 嵌入式測試元件 |
 | :--- | :--- | :--- |
@@ -242,11 +220,6 @@ export default function RPSGame() {
 | **實機驗證效率** | 需透過測試驅動連線手機 | Expo Go 掃碼後直接在手機上點擊測試 |
 | **高頻壓力測試** | 受限於測試驅動 IPC 通訊延遲 | 10ms 一局，1 秒即可跑完 100 次狀態連鎖 |
 | **原始碼狀態** | 業務原始碼保持完全乾淨 | 業務元件中包含部分測試組態程式碼 |
-
-#### 正式環境 (Production) 的安全性
-- **死碼消除 (Dead Code Elimination, DCE)**：
-  在執行生產發布建置（如 `npx expo export`、打包 APK / AAB / IPA）時，打包工具會將全域常數 `__DEV__` 靜態替換為 `false`。
-  程式碼中的 `if (__DEV__)` 區塊會被編譯器視為無法觸達的死碼，並在打包階段由壓縮工具直接移除，不會進入最終發布產物。
 
 ---
 

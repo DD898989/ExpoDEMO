@@ -10,7 +10,7 @@
             "args": []
         },
         {
-            "name": "build and start",
+            "name": "Build and Start",
             "type": "node-terminal",
             "request": "launch",
             "command": "npm run build:start"
